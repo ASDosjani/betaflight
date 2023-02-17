@@ -51,6 +51,18 @@ void sbufWriteU32(sbuf_t *dst, uint32_t val)
     sbufWriteU8(dst, val >> 24);
 }
 
+void sbufWriteU64(sbuf_t *dst, uint64_t val)
+{
+    sbufWriteU8(dst, val);
+    sbufWriteU8(dst, val >> 8);
+    sbufWriteU8(dst, val >> 16);
+    sbufWriteU8(dst, val >> 24);
+    sbufWriteU8(dst, val >> 32);
+    sbufWriteU8(dst, val >> 40);
+    sbufWriteU8(dst, val >> 48);
+    sbufWriteU8(dst, val >> 56);
+}
+
 void sbufWriteU16BigEndian(sbuf_t *dst, uint16_t val)
 {
     sbufWriteU8(dst, val >> 8);
@@ -108,6 +120,20 @@ uint32_t sbufReadU32(sbuf_t *src)
     ret |= sbufReadU8(src) <<  8;
     ret |= sbufReadU8(src) << 16;
     ret |= sbufReadU8(src) << 24;
+    return ret;
+}
+
+uint64_t sbufReadU64(sbuf_t *src)
+{
+    uint64_t ret;
+    ret = (uint64_t)sbufReadU8(src);
+    ret |= (uint64_t)sbufReadU8(src) <<  8;
+    ret |= (uint64_t)sbufReadU8(src) << 16;
+    ret |= (uint64_t)sbufReadU8(src) << 24;
+    ret |= (uint64_t)sbufReadU8(src) << 32;
+    ret |= (uint64_t)sbufReadU8(src) << 40;
+    ret |= (uint64_t)sbufReadU8(src) << 48;
+    ret |= (uint64_t)sbufReadU8(src) << 56;
     return ret;
 }
 

@@ -1720,9 +1720,9 @@ case MSP_NAME:
         for (int i = 0; i < LED_MAX_STRIP_LENGTH; i++) {
 #ifdef USE_LED_STRIP_STATUS_MODE
             const ledConfig_t *ledConfig = &ledStripStatusModeConfig()->ledConfigs[i];
-            sbufWriteU32(dst, *ledConfig);
+            sbufWriteU64(dst, *ledConfig);
 #else
-            sbufWriteU32(dst, 0);
+            sbufWriteU64(dst, 0);
 #endif
         }
 
@@ -3814,15 +3814,15 @@ static mspResult_e mspProcessInCommand(mspDescriptor_t srcDesc, int16_t cmdMSP, 
     case MSP_SET_LED_STRIP_CONFIG:
         {
             i = sbufReadU8(src);
-            if (i >= LED_MAX_STRIP_LENGTH || dataSize != (1 + 4)) {
+            if (i >= LED_MAX_STRIP_LENGTH || dataSize != (1 + 8)) {
                 return MSP_RESULT_ERROR;
             }
 #ifdef USE_LED_STRIP_STATUS_MODE
             ledConfig_t *ledConfig = &ledStripStatusModeConfigMutable()->ledConfigs[i];
-            *ledConfig = sbufReadU32(src);
+            *ledConfig = sbufReadU64(src);
             reevaluateLedConfig();
 #else
-            sbufReadU32(src);
+            sbufReadU64(src);
 #endif
             // API 1.41 - selected ledstrip_profile
             if (sbufBytesRemaining(src) >= 1) {

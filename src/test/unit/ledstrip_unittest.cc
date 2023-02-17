@@ -213,11 +213,11 @@ TEST(LedStripTest, smallestGridWithCenter)
     reevaluateLedConfig();
 
     // then
-    EXPECT_EQ(3, ledGridRows);
-    EXPECT_EQ(0, highestXValueForWest);
-    EXPECT_EQ(2, lowestXValueForEast);
-    EXPECT_EQ(0, highestYValueForNorth);
-    EXPECT_EQ(2, lowestYValueForSouth);
+    EXPECT_EQ(12, ledGridRows);
+    EXPECT_EQ(5, highestXValueForWest);
+    EXPECT_EQ(7, lowestXValueForEast);
+    EXPECT_EQ(5, highestYValueForNorth);
+    EXPECT_EQ(6, lowestYValueForSouth);
 }
 
 TEST(LedStripTest, smallestGrid)
@@ -238,11 +238,11 @@ TEST(LedStripTest, smallestGrid)
     reevaluateLedConfig();
 
     // then
-    EXPECT_EQ(2, ledGridRows);
-    EXPECT_EQ(0, highestXValueForWest);
-    EXPECT_EQ(1, lowestXValueForEast);
-    EXPECT_EQ(0, highestYValueForNorth);
-    EXPECT_EQ(1, lowestYValueForSouth);
+    EXPECT_EQ(12, ledGridRows);
+    EXPECT_EQ(5, highestXValueForWest);
+    EXPECT_EQ(7, lowestXValueForEast);
+    EXPECT_EQ(5, highestYValueForNorth);
+    EXPECT_EQ(6, lowestYValueForSouth);
 }
 
 hsvColor_t testColors[LED_CONFIGURABLE_COLOR_COUNT];
