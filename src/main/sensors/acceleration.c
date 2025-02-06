@@ -21,6 +21,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <math.h>
+#include <string.h>
 
 #include "platform.h"
 
@@ -119,6 +120,7 @@ void accUpdate(timeUs_t currentTimeUs)
     alignAccelerometer();
     calibrateAccelerometer();
     applyAccelerationTrims(accelerationRuntime.accelerationTrims);
+    memcpy(acc.accADCUnfiltered.v, acc.accADC.v, sizeof(acc.accADC.v)); //save acc data before filtering
     postProcessAccelerometer();
 
     acc.isAccelUpdatedAtLeastOnce = true;

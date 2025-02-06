@@ -2649,6 +2649,48 @@ static mspResult_e mspFcProcessOutCommandWithArg(mspDescriptor_t srcDesc, int16_
         break;
 #endif
 
+    case MSP2_UNFILTERED_IMU: {
+        for (int i = 0; i < 3; i++) {
+#if defined(USE_ACC)
+            sbufWriteU16(dst, lrintf(acc.accADCUnfiltered.v[i] * acc.dev.acc_1G_rec)); //scaled
+#else
+            sbufWriteU16(dst, 0);
+#endif
+        }
+        for (int i = 0; i < 3; i++) {
+            sbufWriteU16(dst, gyroRateDpsUnfiltered(i));
+        }
+        for (int i = 0; i < 3; i++) {
+#if defined(USE_MAG)
+            sbufWriteU16(dst, lrintf(mag.magADC.v[i]));
+#else
+            sbufWriteU16(dst, 0);
+#endif
+        }
+        break;
+    }
+
+    case MSP2_FILTERED_IMU: {
+        for (int i = 0; i < 3; i++) {
+#if defined(USE_ACC)
+            sbufWriteU16(dst, lrintf(acc.accADC.v[i] * acc.dev.acc_1G_rec)); //scaled
+#else
+            sbufWriteU16(dst, 0);
+#endif
+        }
+        for (int i = 0; i < 3; i++) {
+            sbufWriteU16(dst, gyroRateDps(i));
+        }
+        for (int i = 0; i < 3; i++) {
+#if defined(USE_MAG)
+            sbufWriteU16(dst, lrintf(mag.magADC.v[i]));
+#else
+            sbufWriteU16(dst, 0);
+#endif
+        }
+        break;
+    }
+
     default:
         return MSP_RESULT_CMD_UNKNOWN;
     }

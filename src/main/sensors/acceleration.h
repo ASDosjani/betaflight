@@ -58,6 +58,7 @@ typedef struct acc_s {
     accDev_t dev;
     uint16_t sampleRateHz;
     vector3_t accADC;                       // rotated but unscaled ADC value
+    vector3_t accADCUnfiltered;             // rotated but unscaled, unfiltered ADC value
     vector3_t jerk;
     float accMagnitude;                     // in multiples of 1G
     float jerkMagnitude;                    // in multiples of 1G/s (measure of collision strength)

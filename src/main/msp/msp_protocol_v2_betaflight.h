@@ -32,6 +32,8 @@
 #define MSP2_SENSOR_OPTICALFLOW             0x300B
 #define MSP2_MCU_INFO                       0x300C
 #define MSP2_RAW_GPS_EXTENDED               0x3100 // GPS data with latency
+#define MSP2_UNFILTERED_IMU                 0x3101
+#define MSP2_FILTERED_IMU                   0x3102
 
 // MSP2_SET_TEXT and MSP2_GET_TEXT variable types
 #define MSP2TEXT_PILOT_NAME                      1
