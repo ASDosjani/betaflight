@@ -2633,23 +2633,8 @@ static mspResult_e mspFcProcessOutCommandWithArg(mspDescriptor_t srcDesc, int16_
         break;
 #endif
 
-#ifdef USE_GPS
-    case MSP2_RAW_GPS_EXTENDED: // GPS data with latency
-        sbufWriteU8(dst, STATE(GPS_FIX));
-        sbufWriteU8(dst, gpsSol.numSat);
-        sbufWriteU32(dst, gpsSol.llh.lat);
-        sbufWriteU32(dst, gpsSol.llh.lon);
-        sbufWriteU16(dst, (uint16_t)constrain(gpsSol.llh.altCm / 100, 0, UINT16_MAX)); // alt changed from 1m to 0.01m per lsb since MSP API 1.39 by RTH. To maintain backwards compatibility compensate to 1m per lsb in MSP again.
-        sbufWriteU16(dst, gpsSol.groundSpeed);
-        sbufWriteU16(dst, gpsSol.groundCourse);
-        // Added in API version 1.44
-        sbufWriteU16(dst, gpsSol.dop.pdop);
-        uint32_t latency = millis() - gpsData.lastNavMessage;
-        sbufWriteU32(dst, latency);
-        break;
-#endif
-
-    case MSP2_UNFILTERED_IMU: {
+    case MSP2_EXTENDED_TELEMETRY: {
+    //Unfiltered IMU data
         for (int i = 0; i < 3; i++) {
 #if defined(USE_ACC)
             sbufWriteU16(dst, lrintf(acc.accADCUnfiltered.v[i] * acc.dev.acc_1G_rec)); //scaled
@@ -2667,10 +2652,8 @@ static mspResult_e mspFcProcessOutCommandWithArg(mspDescriptor_t srcDesc, int16_
             sbufWriteU16(dst, 0);
 #endif
         }
-        break;
-    }
 
-    case MSP2_FILTERED_IMU: {
+    //Filtered IMU data
         for (int i = 0; i < 3; i++) {
 #if defined(USE_ACC)
             sbufWriteU16(dst, lrintf(acc.accADC.v[i] * acc.dev.acc_1G_rec)); //scaled
@@ -2687,10 +2670,23 @@ static mspResult_e mspFcProcessOutCommandWithArg(mspDescriptor_t srcDesc, int16_
 #else
             sbufWriteU16(dst, 0);
 #endif
-        }
+            }
+#ifdef USE_GPS
+    // GPS data with latency
+        sbufWriteU8(dst, STATE(GPS_FIX));
+        sbufWriteU8(dst, gpsSol.numSat);
+        sbufWriteU32(dst, gpsSol.llh.lat);
+        sbufWriteU32(dst, gpsSol.llh.lon);
+        sbufWriteU16(dst, (uint16_t)constrain(gpsSol.llh.altCm / 100, 0, UINT16_MAX)); // alt changed from 1m to 0.01m per lsb since MSP API 1.39 by RTH. To maintain backwards compatibility compensate to 1m per lsb in MSP again.
+        sbufWriteU16(dst, gpsSol.groundSpeed);
+        sbufWriteU16(dst, gpsSol.groundCourse);
+        // Added in API version 1.44
+        sbufWriteU16(dst, gpsSol.dop.pdop);
+        uint32_t latency = millis() - gpsData.lastNavMessage;
+        sbufWriteU32(dst, latency);
         break;
     }
-
+#endif
     default:
         return MSP_RESULT_CMD_UNKNOWN;
     }
