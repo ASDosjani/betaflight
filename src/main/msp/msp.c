@@ -2685,7 +2685,35 @@ static mspResult_e mspFcProcessOutCommandWithArg(mspDescriptor_t srcDesc, int16_
         uint32_t latency = millis() - gpsData.lastNavMessage;
         sbufWriteU32(dst, latency);
         break;
+#endif
     }
+#ifdef USE_GPS
+    case MSP2_SET_GPS_RESCUE:
+        gpsRescueConfigMutable()->maxRescueAngle = sbufReadU16(src);
+        gpsRescueConfigMutable()->returnAltitudeM = sbufReadU16(src);
+        gpsRescueConfigMutable()->descentDistanceM = sbufReadU16(src);
+        gpsRescueConfigMutable()->groundSpeedCmS = sbufReadU16(src);
+        apConfigMutable()->throttle_min = sbufReadU16(src);
+        apConfigMutable()->throttle_max = sbufReadU16(src);
+        apConfigMutable()->hover_throttle = sbufReadU16(src);
+        gpsRescueConfigMutable()->sanityChecks = sbufReadU8(src);
+        gpsRescueConfigMutable()->minSats = sbufReadU8(src);
+        if (sbufBytesRemaining(src) >= 6) {
+            // Added in API version 1.43
+            gpsRescueConfigMutable()->ascendRate = sbufReadU16(src);
+            gpsRescueConfigMutable()->descendRate = sbufReadU16(src);
+            gpsRescueConfigMutable()->allowArmingWithoutFix = sbufReadU8(src);
+            gpsRescueConfigMutable()->altitudeMode = sbufReadU8(src);
+        }
+        if (sbufBytesRemaining(src) >= 2) {
+            // Added in API version 1.44
+            gpsRescueConfigMutable()->minStartDistM = sbufReadU16(src);
+        }
+        if (sbufBytesRemaining(src) >= 2) {
+            // Added in API version 1.46
+            gpsRescueConfigMutable()->initialClimbM = sbufReadU16(src);
+        }
+        break;
 #endif
     default:
         return MSP_RESULT_CMD_UNKNOWN;
