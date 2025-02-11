@@ -2688,6 +2688,27 @@ static mspResult_e mspFcProcessOutCommandWithArg(mspDescriptor_t srcDesc, int16_
 #endif
     }
 #ifdef USE_GPS
+    case MSP2_GPS_RESCUE:
+        sbufWriteU16(dst, gpsRescueConfig()->maxRescueAngle);
+        sbufWriteU16(dst, gpsRescueConfig()->returnAltitudeM);
+        sbufWriteU16(dst, gpsRescueConfig()->descentDistanceM);
+        sbufWriteU16(dst, gpsRescueConfig()->groundSpeedCmS);
+        sbufWriteU16(dst, apConfig()->throttle_min);
+        sbufWriteU16(dst, apConfig()->throttle_max);
+        sbufWriteU16(dst, apConfig()->hover_throttle);
+        sbufWriteU8(dst,  gpsRescueConfig()->sanityChecks);
+        sbufWriteU8(dst,  gpsRescueConfig()->minSats);
+
+        // Added in API version 1.43
+        sbufWriteU16(dst, gpsRescueConfig()->ascendRate);
+        sbufWriteU16(dst, gpsRescueConfig()->descendRate);
+        sbufWriteU8(dst, gpsRescueConfig()->allowArmingWithoutFix);
+        sbufWriteU8(dst, gpsRescueConfig()->altitudeMode);
+        // Added in API version 1.44
+        sbufWriteU16(dst, gpsRescueConfig()->minStartDistM);
+        // Added in API version 1.46
+        sbufWriteU16(dst, gpsRescueConfig()->initialClimbM);
+        break;
     case MSP2_SET_GPS_RESCUE:
         gpsRescueConfigMutable()->maxRescueAngle = sbufReadU16(src);
         gpsRescueConfigMutable()->returnAltitudeM = sbufReadU16(src);
