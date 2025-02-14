@@ -24,7 +24,7 @@
 #include <ctype.h>
 
 #include "platform.h"
-
+#define USE_MSP_DISPLAYPORT
 #ifdef USE_MSP_DISPLAYPORT
 
 #include "cli/cli.h"

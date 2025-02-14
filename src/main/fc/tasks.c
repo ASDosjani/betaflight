@@ -21,6 +21,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <math.h>
 
 #include "platform.h"
 
@@ -77,6 +78,7 @@
 #include "io/vtx.h"
 
 #include "msp/msp.h"
+#include "msp/msp_protocol_v2_betaflight.h"
 #include "msp/msp_serial.h"
 
 #include "osd/osd.h"
@@ -99,6 +101,7 @@
 #include "sensors/sensors.h"
 #include "sensors/rangefinder.h"
 #include "sensors/opticalflow.h"
+#include "sensors/gyro_init.h"
 
 #include "telemetry/telemetry.h"
 #include "telemetry/crsf.h"
@@ -339,6 +342,68 @@ static void taskCameraControl(uint32_t currentTime)
 }
 #endif
 
+static void sendExtendedTelemetry(timeUs_t currentTimeUs) {
+    UNUSED(currentTimeUs);
+    //52 bytes payload
+    uint8_t telemetryPayloadArr[52] = {0};
+    sbuf_t telemetryPayload;
+    telemetryPayload.ptr = &telemetryPayloadArr[0];
+    telemetryPayload.end = telemetryPayload.ptr + sizeof(telemetryPayloadArr);
+    sbuf_t *dst = &telemetryPayload;
+    
+        //Unfiltered IMU data 9 DoF
+        for (int i = 0; i < 3; i++) {
+#if defined(USE_ACC)
+            sbufWriteU16(dst, lrintf(acc.accADCUnfiltered.v[i] * acc.dev.acc_1G_rec*10000)); //scaled
+#else
+            sbufWriteU16(dst, 0);
+#endif
+        }
+        for (int i = 0; i < 3; i++) {
+            sbufWriteU16(dst, gyroRateDpsUnfiltered(i));
+        }
+        for (int i = 0; i < 3; i++) {
+#if defined(USE_MAG)
+            sbufWriteU16(dst, lrintf(mag.magADC.v[i]));
+#else
+            sbufWriteU16(dst, 0);
+#endif
+        }
+
+    //Filtered IMU data 6 DoF
+        for (int i = 0; i < 3; i++) {
+#if defined(USE_ACC)
+            sbufWriteU16(dst, lrintf(acc.accADC.v[i] * acc.dev.acc_1G_rec*10000)); //scaled
+#else
+            sbufWriteU16(dst, 0);
+#endif
+        }
+        for (int i = 0; i < 3; i++) {
+            sbufWriteU16(dst, gyroRateDps(i));
+        }
+#ifdef USE_GPS
+    // GPS data with latency
+        sbufWriteU8(dst, STATE(GPS_FIX));
+        sbufWriteU8(dst, gpsSol.numSat);
+        sbufWriteU32(dst, gpsSol.llh.lat);
+        sbufWriteU32(dst, gpsSol.llh.lon);
+        sbufWriteU16(dst, (uint16_t)constrain(gpsSol.llh.altCm / 100, 0, UINT16_MAX)); // alt changed from 1m to 0.01m per lsb since MSP API 1.39 by RTH. To maintain backwards compatibility compensate to 1m per lsb in MSP again.
+        sbufWriteU16(dst, gpsSol.groundSpeed);
+        sbufWriteU16(dst, gpsSol.groundCourse);
+        // Added in API version 1.44
+        sbufWriteU16(dst, gpsSol.dop.pdop);
+        uint32_t latency = millis() - gpsData.lastNavMessage;
+        sbufWriteU32(dst, latency);
+#endif
+
+        /*uint32_t time = millis()/1000;
+        telemetryPayloadArr[0] = time & 0xFF;
+        telemetryPayloadArr[1] = (time >> 8) & 0xFF;
+        telemetryPayloadArr[3] = (time >> 16) & 0xFF;
+        telemetryPayloadArr[4] = (time >> 24) & 0xFF;*/
+        mspSerialPush(SERIAL_PORT_UART6, MSP2_EXTENDED_TELEMETRY, telemetryPayloadArr, sizeof(telemetryPayloadArr), MSP_DIRECTION_REPLY, MSP_V2_NATIVE); // TODO SERIAL_PORT_UART6 cmd command
+}
+
 #define DEFINE_TASK(taskNameParam, subTaskNameParam, checkFuncParam, taskFuncParam, desiredPeriodParam, staticPriorityParam) {  \
     .taskName = taskNameParam, \
     .subTaskName = subTaskNameParam, \
@@ -478,6 +543,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 #ifdef USE_GIMBAL
     [TASK_GIMBAL] = DEFINE_TASK("GIMBAL", NULL, NULL, gimbalUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_MEDIUM),
 #endif
+    [TASK_EXTENDED_TELEMETRY] = DEFINE_TASK("EXTENDED_TELEMETRY", NULL, NULL, sendExtendedTelemetry, TASK_PERIOD_HZ(10), TASK_PRIORITY_MEDIUM),
 };
 
 task_t *getTask(unsigned taskId)
@@ -671,4 +737,5 @@ void tasksInit(void)
 #ifdef USE_GIMBAL
     setTaskEnabled(TASK_GIMBAL, true);
 #endif
+    setTaskEnabled(TASK_EXTENDED_TELEMETRY, true);
 }
