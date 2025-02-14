@@ -74,6 +74,7 @@
 #include "io/vtx.h"
 #include "io/vtx_control.h"
 #include "io/vtx_rtc6705.h"
+#include "io/extended_telemetry.h"
 
 #include "osd/osd.h"
 
@@ -1961,6 +1962,8 @@ const clivalue_t valueTable[] = {
     { "gimbal_stabilisation",      VAR_INT8 | MASTER_VALUE, .config.minmaxUnsigned = { 0, 7 }, PG_GIMBAL_TRACK_CONFIG, offsetof(gimbalTrackConfig_t, gimbal_stabilisation) },
     { "gimbal_sensitivity",        VAR_INT8 | MASTER_VALUE, .config.minmaxUnsigned = { -16, 15 }, PG_GIMBAL_TRACK_CONFIG, offsetof(gimbalTrackConfig_t, gimbal_sensitivity) },
 #endif
+    { "extended_telemetry_uart_number",   VAR_UINT8 | MASTER_VALUE, .config.minmaxUnsigned = { 1, 10 }, PG_EXTENDED_TELEMETRY_CONFIG, offsetof(extendedTelemetryConfig_t, extended_telemetry_uart_number) },
+    { "extended_telemetry_frequency",     VAR_UINT8 | MASTER_VALUE, .config.minmaxUnsigned = { 1, 200 }, PG_EXTENDED_TELEMETRY_CONFIG, offsetof(extendedTelemetryConfig_t, extended_telemetry_frequency) },
 };
 
 const uint16_t valueTableEntryCount = ARRAYLEN(valueTable);

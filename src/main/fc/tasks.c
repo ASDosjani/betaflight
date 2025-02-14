@@ -76,6 +76,7 @@
 #include "io/rcdevice_cam.h"
 #include "io/usb_cdc_hid.h"
 #include "io/vtx.h"
+#include "io/extended_telemetry.h"
 
 #include "msp/msp.h"
 #include "msp/msp_protocol_v2_betaflight.h"
@@ -342,7 +343,7 @@ static void taskCameraControl(uint32_t currentTime)
 }
 #endif
 
-static void sendExtendedTelemetry(timeUs_t currentTimeUs) {
+void extendedTelemetryUpdate(timeUs_t currentTimeUs) {
     UNUSED(currentTimeUs);
     //52 bytes payload
     uint8_t telemetryPayloadArr[52] = {0};
@@ -401,7 +402,15 @@ static void sendExtendedTelemetry(timeUs_t currentTimeUs) {
         telemetryPayloadArr[1] = (time >> 8) & 0xFF;
         telemetryPayloadArr[3] = (time >> 16) & 0xFF;
         telemetryPayloadArr[4] = (time >> 24) & 0xFF;*/
-        mspSerialPush(SERIAL_PORT_UART6, MSP2_EXTENDED_TELEMETRY, telemetryPayloadArr, sizeof(telemetryPayloadArr), MSP_DIRECTION_REPLY, MSP_V2_NATIVE); // TODO SERIAL_PORT_UART6 cmd command
+        mspSerialPush(extendedTelemetryConfig()->extended_telemetry_uart_number+SERIAL_PORT_UART_FIRST-1, MSP2_EXTENDED_TELEMETRY, telemetryPayloadArr, sizeof(telemetryPayloadArr), MSP_DIRECTION_REPLY, MSP_V2_NATIVE); // TODO SERIAL_PORT_UART6 cmd command
+}
+
+PG_REGISTER_WITH_RESET_FN(extendedTelemetryConfig_t, extendedTelemetryConfig, PG_EXTENDED_TELEMETRY_CONFIG, 1);
+
+void pgResetFn_extendedTelemetryConfig(extendedTelemetryConfig_t *extendedTelemetryConfig)
+{
+    extendedTelemetryConfig->extended_telemetry_uart_number = 6;
+    extendedTelemetryConfig->extended_telemetry_frequency = 10;
 }
 
 #define DEFINE_TASK(taskNameParam, subTaskNameParam, checkFuncParam, taskFuncParam, desiredPeriodParam, staticPriorityParam) {  \
@@ -542,8 +551,8 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 
 #ifdef USE_GIMBAL
     [TASK_GIMBAL] = DEFINE_TASK("GIMBAL", NULL, NULL, gimbalUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_MEDIUM),
-#endif
-    [TASK_EXTENDED_TELEMETRY] = DEFINE_TASK("EXTENDED_TELEMETRY", NULL, NULL, sendExtendedTelemetry, TASK_PERIOD_HZ(10), TASK_PRIORITY_MEDIUM),
+#endif    
+    [TASK_EXTENDED_TELEMETRY] = DEFINE_TASK("EXTENDED_TELEMETRY", NULL, NULL, extendedTelemetryUpdate, TASK_PERIOD_HZ(10), TASK_PRIORITY_MEDIUM),
 };
 
 task_t *getTask(unsigned taskId)
@@ -738,4 +747,5 @@ void tasksInit(void)
     setTaskEnabled(TASK_GIMBAL, true);
 #endif
     setTaskEnabled(TASK_EXTENDED_TELEMETRY, true);
+    rescheduleTask(TASK_EXTENDED_TELEMETRY, TASK_PERIOD_HZ(extendedTelemetryConfig()->extended_telemetry_frequency));
 }
