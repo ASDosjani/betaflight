@@ -409,8 +409,8 @@ PG_REGISTER_WITH_RESET_FN(extendedTelemetryConfig_t, extendedTelemetryConfig, PG
 
 void pgResetFn_extendedTelemetryConfig(extendedTelemetryConfig_t *extendedTelemetryConfig)
 {
-    extendedTelemetryConfig->extended_telemetry_uart_number = 6;
-    extendedTelemetryConfig->extended_telemetry_frequency = 10;
+    extendedTelemetryConfig->extended_telemetry_uart_number = 10;
+    extendedTelemetryConfig->extended_telemetry_frequency = 100;
 }
 
 #define DEFINE_TASK(taskNameParam, subTaskNameParam, checkFuncParam, taskFuncParam, desiredPeriodParam, staticPriorityParam) {  \
@@ -552,7 +552,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 #ifdef USE_GIMBAL
     [TASK_GIMBAL] = DEFINE_TASK("GIMBAL", NULL, NULL, gimbalUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_MEDIUM),
 #endif    
-    [TASK_EXTENDED_TELEMETRY] = DEFINE_TASK("EXTENDED_TELEMETRY", NULL, NULL, extendedTelemetryUpdate, TASK_PERIOD_HZ(10), TASK_PRIORITY_MEDIUM),
+    [TASK_EXTENDED_TELEMETRY] = DEFINE_TASK("EXTENDED_TELEMETRY", NULL, NULL, extendedTelemetryUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_MEDIUM_HIGH),
 };
 
 task_t *getTask(unsigned taskId)
@@ -746,6 +746,6 @@ void tasksInit(void)
 #ifdef USE_GIMBAL
     setTaskEnabled(TASK_GIMBAL, true);
 #endif
-    setTaskEnabled(TASK_EXTENDED_TELEMETRY, true);
+    setTaskEnabled(TASK_EXTENDED_TELEMETRY, extendedTelemetryConfig()->extended_telemetry_uart_number < 10);
     rescheduleTask(TASK_EXTENDED_TELEMETRY, TASK_PERIOD_HZ(extendedTelemetryConfig()->extended_telemetry_frequency));
 }

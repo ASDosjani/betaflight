@@ -2632,7 +2632,55 @@ static mspResult_e mspFcProcessOutCommandWithArg(mspDescriptor_t srcDesc, int16_
         sbufWriteU16(dst, ledStripConfig()->ledstrip_rainbow_freq);
         break;
 #endif
+/*
+case MSP2_EXTENDED_TELEMETRY: {
+    //Unfiltered IMU data 9 DoF
+    for (int i = 0; i < 3; i++) {
+#if defined(USE_ACC)
+        sbufWriteU16(dst, lrintf(acc.accADCUnfiltered.v[i] * acc.dev.acc_1G_rec*10000)); //scaled
+#else
+        sbufWriteU16(dst, 0);
+#endif
+    }
+    for (int i = 0; i < 3; i++) {
+        sbufWriteU16(dst, gyroRateDpsUnfiltered(i));
+    }
+    for (int i = 0; i < 3; i++) {
+#if defined(USE_MAG)
+        sbufWriteU16(dst, lrintf(mag.magADC.v[i]));
+#else
+        sbufWriteU16(dst, 0);
+#endif
+    }
 
+//Filtered IMU data 6 DoF
+    for (int i = 0; i < 3; i++) {
+#if defined(USE_ACC)
+        sbufWriteU16(dst, lrintf(acc.accADC.v[i] * acc.dev.acc_1G_rec*10000)); //scaled
+#else
+        sbufWriteU16(dst, 0);
+#endif
+    }
+    for (int i = 0; i < 3; i++) {
+        sbufWriteU16(dst, gyroRateDps(i));
+    }
+#ifdef USE_GPS
+    // GPS data with latency
+        sbufWriteU8(dst, STATE(GPS_FIX));
+        sbufWriteU8(dst, gpsSol.numSat);
+        sbufWriteU32(dst, gpsSol.llh.lat);
+        sbufWriteU32(dst, gpsSol.llh.lon);
+        sbufWriteU16(dst, (uint16_t)constrain(gpsSol.llh.altCm / 100, 0, UINT16_MAX)); // alt changed from 1m to 0.01m per lsb since MSP API 1.39 by RTH. To maintain backwards compatibility compensate to 1m per lsb in MSP again.
+        sbufWriteU16(dst, gpsSol.groundSpeed);
+        sbufWriteU16(dst, gpsSol.groundCourse);
+        // Added in API version 1.44
+        sbufWriteU16(dst, gpsSol.dop.pdop);
+        uint32_t latency = millis() - gpsData.lastNavMessage;
+        sbufWriteU32(dst, latency);
+#endif
+        break;
+    }
+*/
 #ifdef USE_GPS
     case MSP2_GPS_RESCUE:
         sbufWriteU16(dst, gpsRescueConfig()->maxRescueAngle);
