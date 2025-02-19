@@ -2730,6 +2730,20 @@ case MSP2_EXTENDED_TELEMETRY: {
         }
         break;
 #endif
+case MSP2_SET_RAW_RC:
+        {
+            uint8_t channelCount = sbufBytesRemaining(src) / sizeof(uint16_t);
+            if (channelCount > MAX_SUPPORTED_RC_CHANNEL_COUNT) {
+                return MSP_RESULT_ERROR;
+            } else {
+                uint16_t frame[MAX_SUPPORTED_RC_CHANNEL_COUNT];
+                for (int i = 0; i < channelCount; i++) {
+                    frame[i] = sbufReadU16(src);
+                }
+                rxMspFrameReceive(frame, channelCount);
+            }
+        }
+        break;
     default:
         return MSP_RESULT_CMD_UNKNOWN;
     }
