@@ -1964,6 +1964,7 @@ const clivalue_t valueTable[] = {
 #endif
     { "extended_telemetry_uart_number",   VAR_UINT8 | MASTER_VALUE, .config.minmaxUnsigned = { 1, 10 }, PG_EXTENDED_TELEMETRY_CONFIG, offsetof(extendedTelemetryConfig_t, extended_telemetry_uart_number) },
     { "extended_telemetry_frequency",     VAR_UINT8 | MASTER_VALUE, .config.minmaxUnsigned = { 1, 200 }, PG_EXTENDED_TELEMETRY_CONFIG, offsetof(extendedTelemetryConfig_t, extended_telemetry_frequency) },
+    { "extended_telemetry_forwarded_rc_channel",     VAR_UINT8 | MASTER_VALUE, .config.minmaxUnsigned = { 0, 15 }, PG_EXTENDED_TELEMETRY_CONFIG, offsetof(extendedTelemetryConfig_t, extended_telemetry_forwarded_rc_channel) },
 };
 
 const uint16_t valueTableEntryCount = ARRAYLEN(valueTable);

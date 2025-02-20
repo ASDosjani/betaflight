@@ -30,6 +30,7 @@
 typedef struct extendedTelemetryConfig_s {
     uint8_t extended_telemetry_uart_number;
     uint8_t extended_telemetry_frequency;
+    uint8_t extended_telemetry_forwarded_rc_channel;
 } extendedTelemetryConfig_t;
 
 PG_DECLARE(extendedTelemetryConfig_t, extendedTelemetryConfig);

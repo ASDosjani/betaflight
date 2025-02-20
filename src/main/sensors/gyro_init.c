@@ -706,7 +706,7 @@ const mpuDetectionResult_t *gyroMpuDetectionResult(void)
 
 int16_t gyroRateDpsUnfiltered(int axis)
 {
-    return lrintf(gyro.gyroADC[axis]);
+    return lrintf(gyro.gyroADC[axis] / ACTIVE_GYRO->gyroDev.scale);
 }
 
 int16_t gyroRateDps(int axis)

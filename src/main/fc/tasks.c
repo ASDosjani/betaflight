@@ -346,7 +346,7 @@ static void taskCameraControl(uint32_t currentTime)
 void extendedTelemetryUpdate(timeUs_t currentTimeUs) {
     UNUSED(currentTimeUs);
     //52 bytes payload
-    uint8_t telemetryPayloadArr[52] = {0};
+    uint8_t telemetryPayloadArr[54] = {0};
     sbuf_t telemetryPayload;
     telemetryPayload.ptr = &telemetryPayloadArr[0];
     telemetryPayload.end = telemetryPayload.ptr + sizeof(telemetryPayloadArr);
@@ -382,6 +382,8 @@ void extendedTelemetryUpdate(timeUs_t currentTimeUs) {
         for (int i = 0; i < 3; i++) {
             sbufWriteU16(dst, gyroRateDps(i));
         }
+    //1 RC channel forwarding
+        sbufWriteU16(dst, rcData[extendedTelemetryConfig()->extended_telemetry_forwarded_rc_channel]);
 #ifdef USE_GPS
     // GPS data with latency
         sbufWriteU8(dst, STATE(GPS_FIX));
@@ -411,6 +413,7 @@ void pgResetFn_extendedTelemetryConfig(extendedTelemetryConfig_t *extendedTeleme
 {
     extendedTelemetryConfig->extended_telemetry_uart_number = 10;
     extendedTelemetryConfig->extended_telemetry_frequency = 100;
+    extendedTelemetryConfig->extended_telemetry_forwarded_rc_channel = 6;
 }
 
 #define DEFINE_TASK(taskNameParam, subTaskNameParam, checkFuncParam, taskFuncParam, desiredPeriodParam, staticPriorityParam) {  \
