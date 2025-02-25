@@ -283,6 +283,7 @@ COMMON_SRC = \
             io/vtx_tramp.c \
             io/vtx_control.c \
             io/vtx_msp.c \
+            io/extended_telemetry.c \
             cms/cms_menu_vtx_msp.c
 
 ifneq ($(SIMULATOR_BUILD),yes)
@@ -527,6 +528,7 @@ SIZE_OPTIMISED_SRC += \
             osd/osd_warnings.c \
             rx/rx_bind.c \
             io/vtx_msp.c \
+            io/extended_telemetry.c \
             cms/cms_menu_vtx_msp.c
 
 # check if target.mk supplied

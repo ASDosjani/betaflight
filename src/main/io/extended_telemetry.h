@@ -26,6 +26,7 @@
 #include "platform.h"
 #include "common/time.h"
 
+void extendedTelemetryUpdate(timeUs_t currentTimeUs);
 
 typedef struct extendedTelemetryConfig_s {
     uint8_t extended_telemetry_uart_number;
