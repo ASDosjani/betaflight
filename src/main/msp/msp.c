@@ -2744,6 +2744,11 @@ case MSP2_SET_RAW_RC:
             }
         }
         break;
+    case MSP2_SET_MOTOR:
+        for (int i = 0; i < getMotorCount(); i++) {
+            motor_disarmed[i] = motorConvertFromExternal(sbufReadU16(src));
+        }
+        break;
     default:
         return MSP_RESULT_CMD_UNKNOWN;
     }

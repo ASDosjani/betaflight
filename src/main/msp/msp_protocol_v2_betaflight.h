@@ -36,6 +36,7 @@
 #define MSP2_SET_GPS_RESCUE                 0x3102 //Set GPS Rescue config runtime,
                                                    //don't forget to save to EEPROM after Disarm (MSP2_SET_GPS_RESCUE)
 #define MSP2_SET_RAW_RC                     0x3103 //Set raw RC values and disable other control for 0.2s
+#define MSP2_SET_MOTOR                      0x3104
 
 // MSP2_SET_TEXT and MSP2_GET_TEXT variable types
 #define MSP2TEXT_PILOT_NAME                      1
