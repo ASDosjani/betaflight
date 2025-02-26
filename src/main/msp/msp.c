@@ -2687,9 +2687,9 @@ case MSP2_EXTENDED_TELEMETRY: {
         sbufWriteU16(dst, gpsRescueConfig()->returnAltitudeM);
         sbufWriteU16(dst, gpsRescueConfig()->descentDistanceM);
         sbufWriteU16(dst, gpsRescueConfig()->groundSpeedCmS);
-        sbufWriteU16(dst, apConfig()->throttle_min);
-        sbufWriteU16(dst, apConfig()->throttle_max);
-        sbufWriteU16(dst, apConfig()->hover_throttle);
+        sbufWriteU16(dst, autopilotConfig()->throttleMin);
+        sbufWriteU16(dst, autopilotConfig()->throttleMax);
+        sbufWriteU16(dst, autopilotConfig()->hoverThrottle);
         sbufWriteU8(dst,  gpsRescueConfig()->sanityChecks);
         sbufWriteU8(dst,  gpsRescueConfig()->minSats);
 
@@ -2708,9 +2708,9 @@ case MSP2_EXTENDED_TELEMETRY: {
         gpsRescueConfigMutable()->returnAltitudeM = sbufReadU16(src);
         gpsRescueConfigMutable()->descentDistanceM = sbufReadU16(src);
         gpsRescueConfigMutable()->groundSpeedCmS = sbufReadU16(src);
-        apConfigMutable()->throttle_min = sbufReadU16(src);
-        apConfigMutable()->throttle_max = sbufReadU16(src);
-        apConfigMutable()->hover_throttle = sbufReadU16(src);
+        autopilotConfigMutable()->throttleMin = sbufReadU16(src);
+        autopilotConfigMutable()->throttleMax = sbufReadU16(src);
+        autopilotConfigMutable()->hoverThrottle = sbufReadU16(src);
         gpsRescueConfigMutable()->sanityChecks = sbufReadU8(src);
         gpsRescueConfigMutable()->minSats = sbufReadU8(src);
         if (sbufBytesRemaining(src) >= 6) {
