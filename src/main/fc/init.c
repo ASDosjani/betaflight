@@ -127,6 +127,7 @@
 #include "io/vtx_rtc6705.h"
 #include "io/vtx_smartaudio.h"
 #include "io/vtx_tramp.h"
+#include "io/extended_telemetry.h"
 
 #include "msc/emfat_file.h"
 #ifdef USE_PERSISTENT_MSC_RTC
@@ -1004,6 +1005,7 @@ void init(void)
         gpsRescueInit();
     }
 #endif
+    extendedTelemetryInit();
 
     debugInit();
 

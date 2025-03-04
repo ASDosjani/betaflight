@@ -23,9 +23,8 @@
 #include <ctype.h>
 #include <math.h>
 
-#include "platform.h"
 #include "common/time.h"
-
+void extendedTelemetryInit();
 void extendedTelemetryUpdate(timeUs_t currentTimeUs);
 
 typedef struct extendedTelemetryConfig_s {

@@ -1,3 +1,6 @@
+
+#include "platform.h"
+
 #include "extended_telemetry.h"
 #include "../common/streambuf.h"
 #include "../sensors/acceleration.h"
@@ -10,6 +13,13 @@
 #include "msp/msp.h"
 #include "msp/msp_serial.h"
 #include "pg/pg_ids.h"
+//#include "drivers/io.h"
+//#include "drivers/io_def.h"
+IO_t extendedTelemetryIO;
+void extendedTelemetryInit(void) {
+    extendedTelemetryIO = IOGetByTag(IO_TAG(PA15));
+    IOConfigGPIO(extendedTelemetryIO, IOCFG_OUT_PP);
+}
 
 void extendedTelemetryUpdate(timeUs_t currentTimeUs) {
     UNUSED(currentTimeUs);
@@ -72,6 +82,9 @@ void extendedTelemetryUpdate(timeUs_t currentTimeUs) {
         telemetryPayloadArr[1] = (time >> 8) & 0xFF;
         telemetryPayloadArr[3] = (time >> 16) & 0xFF;
         telemetryPayloadArr[4] = (time >> 24) & 0xFF;*/
+        static bool interruptPin = false;
+        interruptPin = !interruptPin;
+        IOWrite(extendedTelemetryIO, interruptPin);
         mspSerialPush(extendedTelemetryConfig()->extended_telemetry_uart_number+SERIAL_PORT_UART_FIRST-1, MSP2_EXTENDED_TELEMETRY, telemetryPayloadArr, sizeof(telemetryPayloadArr), MSP_DIRECTION_REPLY, MSP_V2_NATIVE); // TODO SERIAL_PORT_UART6 cmd command
 }
 

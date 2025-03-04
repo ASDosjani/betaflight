@@ -480,7 +480,7 @@ task_attribute_t task_attributes[TASK_COUNT] = {
 
 #ifdef USE_GIMBAL
     [TASK_GIMBAL] = DEFINE_TASK("GIMBAL", NULL, NULL, gimbalUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_MEDIUM),
-#endif    
+#endif
     [TASK_EXTENDED_TELEMETRY] = DEFINE_TASK("EXTENDED_TELEMETRY", NULL, NULL, extendedTelemetryUpdate, TASK_PERIOD_HZ(100), TASK_PRIORITY_MEDIUM_HIGH),
 };
 
